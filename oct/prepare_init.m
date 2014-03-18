@@ -6,7 +6,7 @@ function prepare_init()
     nc{'sigma2'} = ncdouble();
     nc{'beta'}(:) = 1.663/763;
     nc{'nu'}(:) = 0.441;
-    nc{'sigma1'}(:) = 100.0;
-    nc{'sigma2'}(:) = 100.0;
+    nc{'sigma1'}(:) = 0.2;
+    nc{'sigma2'}(:) = 0.2;
     ncclose(nc);
 end
