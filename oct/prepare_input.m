@@ -12,9 +12,9 @@ function prepare_input ()
   meanfunc = @meanZero;
   hyp.mean = [];
   covfunc = @covSEiso;
-  hyp.cov = log([5.0; 1.0]);
+  hyp.cov = log([5.0; 5.0]);
   likfunc = @likGauss;
-  hyp.lik = log(1.0e-3);
+  hyp.lik = log(1.0e-2);
 
   hyp = minimize(hyp, @gpwrap, -1000, @infExact, meanfunc, covfunc, likfunc, t, y);
 
