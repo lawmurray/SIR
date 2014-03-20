@@ -26,10 +26,10 @@ model SIR {
   }
 
   sub proposal_parameter {
-    beta ~ truncated_gaussian(beta, 1.0e-5, 0.0, 1.0);
-    nu ~ truncated_gaussian(nu, 1.0e-4, 0.0, 1.0);
-    sigma1 ~ truncated_gaussian(sigma1, 1.0e-3, 0.0, 1.0);
-    sigma2 ~ truncated_gaussian(sigma2, 1.0e-3, 0.0, 1.0);
+    beta ~ truncated_gaussian(beta, 4.0e-4, 0.0, 1.0);
+    nu ~ truncated_gaussian(nu, 4.0e-2, 0.0, 1.0);
+    sigma1 ~ truncated_gaussian(sigma1, 4.0e-2, 0.0, 1.0);
+    sigma2 ~ truncated_gaussian(sigma2, 4.0e-2, 0.0, 1.0);
   }
 
   sub initial {
@@ -42,7 +42,7 @@ model SIR {
     w1 ~ wiener();
     w2 ~ wiener();
 
-    ode(h = h, atoler = 1.0e-2, rtoler = 1.0e-6, alg = 'RK5(4)') {
+    ode(h = h, atoler = 1.0e-2, rtoler = 1.0e-5, alg = 'RK5(4)') {
       ds/dt = -beta*i*s + sigma1*s*w1/h;
       di/dt = beta*i*s - nu*i - sigma1*s*w1 + sigma2*i*w2/h;
       dr/dt = nu*i - sigma2*i*w2/h;
