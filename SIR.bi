@@ -2,7 +2,7 @@
  * SIR model.
  */
 model SIR {
-  const h = 0.1; // time step
+  const h = 0.02; // time step
   const delta_abs = 1.0e-2; // absolute error tolerance
   const delta_rel = 1.0e-5; // relative error tolerance
   
@@ -17,7 +17,7 @@ model SIR {
   input s_ell2, s_sf2;
   input i_ell2, i_sf2;
   input r_ell2, r_sf2;
-  const lambda = 1.0;
+  const lambda = 2.0;
 
   inline epsilon_s = delta_abs + delta_rel*abs(s);
   inline epsilon_i = delta_abs + delta_rel*abs(i);
@@ -31,10 +31,10 @@ model SIR {
   }
 
   sub proposal_parameter {
-    beta ~ truncated_gaussian(beta, 2.0e-4, 0.0, 1.0);
-    nu ~ truncated_gaussian(nu, 4.0e-2, 0.0, 1.0);
-    sigma1 ~ truncated_gaussian(sigma1, 1.0e-3, 0.0, 1.0);
-    sigma2 ~ truncated_gaussian(sigma2, 3.0e-2, 0.0, 1.0);
+    beta ~ truncated_gaussian(beta, 5.0e-4, 0.0, 1.0);
+    nu ~ truncated_gaussian(nu, 1.0e-1, 0.0, 1.0);
+    sigma1 ~ truncated_gaussian(sigma1, 2.0e-3, 0.0, 1.0);
+    sigma2 ~ truncated_gaussian(sigma2, 5.0e-2, 0.0, 1.0);
   }
 
   sub initial {
@@ -74,10 +74,6 @@ model SIR {
   }
 
   sub observation {
-    //y_s ~ gaussian(s, 0.5*epsilon_s);
-    //y_i ~ gaussian(i, 0.5*epsilon_i);
-    //y_r ~ gaussian(r, 0.5*epsilon_r);
-
     y_s ~ uniform(s - epsilon_s, s + epsilon_s);
     y_i ~ uniform(i - epsilon_i, i + epsilon_i);
     y_r ~ uniform(r - epsilon_r, r + epsilon_r);
