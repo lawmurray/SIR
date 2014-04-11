@@ -4,9 +4,9 @@ function prepare_init()
     nc{'nu'} = ncdouble();
     nc{'sigma1'} = ncdouble();
     nc{'sigma2'} = ncdouble();
-    nc{'beta'}(:) = 1.663/763;
-    nc{'nu'}(:) = 0.441;
-    nc{'sigma1'}(:) = 0.2;
-    nc{'sigma2'}(:) = 0.2;
+    nc{'beta'}(:) = 0.0033405;
+    nc{'nu'}(:) = 0.61267;
+    nc{'sigma1'}(:) = 0.0067957;
+    nc{'sigma2'}(:) = 0.29879;
     ncclose(nc);
 end
