@@ -33,8 +33,8 @@ model SIR {
   sub proposal_parameter {
     beta ~ truncated_gaussian(beta, 5.0e-4, 0.0, 1.0);
     nu ~ truncated_gaussian(nu, 1.0e-1, 0.0, 1.0);
-    sigma1 ~ truncated_gaussian(sigma1, 2.0e-3, 0.0, 1.0);
-    sigma2 ~ truncated_gaussian(sigma2, 5.0e-2, 0.0, 1.0);
+    sigma1 ~ truncated_gaussian(sigma1, 2.5e-3, 0.0, 1.0);
+    sigma2 ~ truncated_gaussian(sigma2, 8.0e-2, 0.0, 1.0);
   }
 
   sub initial {
