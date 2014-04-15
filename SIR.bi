@@ -47,9 +47,9 @@ model SIR {
     w1 ~ gaussian(0.0, sqrt(h));
     w2 ~ gaussian(0.0, sqrt(h));
     ode(h = h, atoler = delta_abs, rtoler = delta_rel, alg = 'RK4(3)') {
-      ds/dt = -beta*i*s + sigma1*s*w1/h;
-      di/dt = beta*i*s - nu*i - sigma1*s*w1/h + sigma2*i*w2/h;
-      dr/dt = nu*i - sigma2*i*w2/h;
+      ds/dt = -beta*i*s - 0.5*sigma1**2*s + sigma1*s*w1/h;
+      di/dt = beta*i*s + 0.5*sigma1**2*s - 0.5*sigma2**2*i - nu*i - sigma1*s*w1/h + sigma2*i*w2/h;
+      dr/dt = nu*i + 0.5*sigma2**2*i - sigma2*i*w2/h;
     }
   }
 
