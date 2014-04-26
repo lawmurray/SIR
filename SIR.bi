@@ -6,12 +6,13 @@ model SIR {
   const delta_abs = 1.0e-2; // absolute error tolerance
   const delta_rel = 1.0e-5; // relative error tolerance
   
-  input s0, i0, r0;      // initial condition
-  param beta, nu;        // transmission rate, recovery rate
-  param sigma1, sigma2;  // diffusion rates
-  state s, i, r;         // susceptible, infectious, recovered
-  noise w1, w2;          // noise terms
-  obs y_s, y_i, y_r;
+  input s0, i0, r0;  // initial condition
+  param theta1_beta, theta2_beta, theta3_beta;  // OU parameters for beta
+  param theta1_nu, theta2_nu, theta3_nu;  // OU parameters for nu
+  state s, i, r;  // susceptible, infectious, recovered
+  state ln_beta, ln_nu;  // transfer rates
+  noise w_beta, w_nu;  // noise terms
+  obs y_s, y_i, y_r;  // observations
   
   /* bridge weighting function parameters */
   input s_ell2, s_sf2;
@@ -24,32 +25,44 @@ model SIR {
   inline epsilon_r = delta_abs + delta_rel*abs(r);
 
   sub parameter {
-    beta ~ uniform(0.0, 1.0);
-    nu ~ uniform(0.0, 1.0);
-    sigma1 ~ uniform(0.0, 1.0);
-    sigma2 ~ uniform(0.0, 1.0);
+    //theta1_beta ~ uniform(-inf, 0.0);
+    //theta2_beta ~ uniform(0.0, 1.0);
+    //theta3_beta ~ uniform(0.0, 1.0);
+
+    //theta1_nu ~ uniform(-inf, 0.0);
+    //theta2_nu ~ uniform(0.0, 1.0);
+    //theta3_nu ~ uniform(0.0, 1.0);
   }
 
   sub proposal_parameter {
-    beta ~ truncated_gaussian(beta, 5.0e-4, 0.0, 1.0);
-    nu ~ truncated_gaussian(nu, 1.0e-1, 0.0, 1.0);
-    sigma1 ~ truncated_gaussian(sigma1, 2.5e-3, 0.0, 1.0);
-    sigma2 ~ truncated_gaussian(sigma2, 8.0e-2, 0.0, 1.0);
+    theta1_beta ~ normal(theta1_beta, 1.0e-2);
+    theta2_beta ~ normal(theta2_beta, 1.0e-2);
+    theta3_beta ~ normal(theta3_beta, 1.0e-2);
+    
+    theta1_nu ~ normal(theta1_nu, 1.0e-2);
+    theta2_nu ~ normal(theta2_nu, 1.0e-2);
+    theta3_nu ~ normal(theta3_nu, 1.0e-2);
   }
 
   sub initial {
     s <- s0;
     i <- i0;
     r <- r0;
+
+    /* rates initialised from stationary distribution */
+    ln_beta ~ normal(theta1_beta/theta2_beta, 0.5*theta3_beta**2/theta2_beta);
+    ln_nu ~ normal(theta1_nu/theta2_nu, 0.5*theta3_nu**2/theta2_nu);
   }
 
   sub transition(delta = h) {
-    w1 ~ gaussian(0.0, sqrt(h));
-    w2 ~ gaussian(0.0, sqrt(h));
+    w_beta ~ normal(0.0, sqrt(h));
+    w_nu ~ normal(0.0, sqrt(h));
     ode(h = h, atoler = delta_abs, rtoler = delta_rel, alg = 'RK4(3)') {
-      ds/dt = -beta*i*s - 0.5*sigma1**2*s + sigma1*s*w1/h;
-      di/dt = beta*i*s + 0.5*sigma1**2*s - 0.5*sigma2**2*i - nu*i - sigma1*s*w1/h + sigma2*i*w2/h;
-      dr/dt = nu*i + 0.5*sigma2**2*i - sigma2*i*w2/h;
+      ds/dt = -exp(ln_beta)*s*i;
+      di/dt = exp(ln_beta)*s*i - exp(ln_nu)*i;
+      dr/dt = exp(ln_nu*i);
+      dln_beta/dt = (theta1_beta - theta2_beta*ln_beta) + theta3_beta*w_beta/h;
+      dln_nu/dt = (theta1_nu - theta2_nu*ln_nu) + theta3_nu*w_nu/h;
     }
   }
 
