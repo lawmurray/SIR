@@ -6,10 +6,12 @@ model SIR {
   const delta_abs = 1.0e-2; // absolute error tolerance
   const delta_rel = 1.0e-5; // relative error tolerance
   
-  dim n(3);
-  param theta_beta[n], theta_nu[n];  // params of OU processes over fluxes
-  noise w_beta, w_nu;  // noise terms
-  state ln_beta, ln_nu;  // fluxes
+  dim f(2);  // no. fluxes
+  dim n(3);  // no. params in each flux (OU) process
+
+  param theta[f,n];
+  noise w[f];  // noise terms
+  state ln_beta[f];  // fluxes
   state s, i, r;  // susceptible, infectious, recovered
   obs y_s, y_i, y_r;  // observations
   
@@ -24,14 +26,15 @@ model SIR {
   sub proposal_parameter {
     const scale = 0.5;
 
-    input U_beta[n,n], U_nu[n,n];  // Cholesky factors for adapted proposals
-    param z_beta[n](has_output = 0), z_nu[n](has_output = 0);
+    input C[f,n,n];  // adapted covariances for each flux
+    param theta0[f,n](has_output = 0);
 
-    z_beta[i] ~ normal(0.0, 1.0);
-    z_nu[i] ~ normal(0.0, 1.0);
+    theta0 <- theta;
 
-    theta_beta <- theta_beta + scale*U_beta*z_beta;
-    theta_nu <- theta_nu + scale*U_nu*z_nu;
+    /* conditional distributions for multivariate normal proposal */
+    theta[f,0] ~ normal(theta0[f,0], scale*sqrt(C[f,0,0]));
+    theta[f,1] ~ normal(theta0[f,1] + (C[f,0,1]/C[f,0,0])*(theta[f,0] - theta0[f,0]), scale*sqrt(C[f,1,1] - C[f,0,1]**2/C[f,0,0]));
+    theta[f,2] ~ normal(theta0[f,2] + (C[f,0,2]/C[f,0,0])*(theta[f,0] - theta0[f,0]) + (C[f,1,2]/C[f,1,1])*(theta[f,1] - theta0[f,1]), scale*sqrt(C[f,2,2] - C[f,0,2]**2/C[f,1,1] - C[f,1,2]**2/C[f,2,2]));
   }
 
   sub initial {
@@ -42,19 +45,16 @@ model SIR {
     r <- r0;
 
     /* initialise rates from stationary distribution */
-    ln_beta ~ normal(theta1_beta/theta2_beta, 0.5*theta3_beta**2/theta2_beta);
-    ln_nu ~ normal(theta1_nu/theta2_nu, 0.5*theta3_nu**2/theta2_nu);
+    ln_beta[f] ~ normal(theta[f,0]/theta[f,1], 0.5*theta[f,2]**2/theta[f,1]);
   }
 
   sub transition(delta = h) {
-    w_beta ~ normal(0.0, sqrt(h));
-    w_nu ~ normal(0.0, sqrt(h));
-    ode(h = h, atoler = delta_abs, rtoler = delta_rel, alg = 'RK4(3)') {
-      ds/dt = -exp(ln_beta)*s*i;
-      di/dt = exp(ln_beta)*s*i - exp(ln_nu)*i;
-      dr/dt = exp(ln_nu)*i;
-      dln_beta/dt = (theta1_beta - theta2_beta*ln_beta) + theta3_beta*w_beta/h;
-      dln_nu/dt = (theta1_nu - theta2_nu*ln_nu) + theta3_nu*w_nu/h;
+    w[f] ~ normal(0.0, sqrt(h));
+    ode(h = h, atoler = delta_abs, rtoler = delta_rel, alg = 'RK4') {
+      ds/dt = -exp(ln_beta[0])*s*i;
+      di/dt = exp(ln_beta[0])*s*i - exp(ln_beta[1])*i;
+      dr/dt = exp(ln_beta[1])*i;
+      dln_beta[f]/dt = (theta[f,0] - theta[f,1]*ln_beta[f]) + theta[f,2]*w[f]/h;
     }
   }
 
