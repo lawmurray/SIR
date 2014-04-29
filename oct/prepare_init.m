@@ -10,6 +10,6 @@ function prepare_init()
     end
     
     % write file
-    ncwrite(init_file, 'theta_beta', [-6.42 1.06 -1.42]);
-    ncwrite(init_File, 'theta_nu', [-2.62 3.33 3.10]);
+    ncwrite(init_file, 'theta_beta', [-6.42 1.06 -1.42]');
+    ncwrite(init_file, 'theta_nu', [-2.62 3.33 3.10]');
 end
