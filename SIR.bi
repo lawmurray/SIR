@@ -35,13 +35,13 @@ model SIR {
   }
 
   sub proposal_parameter {
-    theta1_beta ~ normal(theta1_beta, 1.0e-2);
-    theta2_beta ~ normal(theta2_beta, 1.0e-2);
-    theta3_beta ~ normal(theta3_beta, 1.0e-2);
+    theta1_beta ~ normal(theta1_beta, 0.6);
+    theta2_beta ~ normal(theta2_beta, 0.1);
+    theta3_beta ~ normal(theta3_beta, 0.3);
     
-    theta1_nu ~ normal(theta1_nu, 1.0e-2);
-    theta2_nu ~ normal(theta2_nu, 1.0e-2);
-    theta3_nu ~ normal(theta3_nu, 1.0e-2);
+    theta1_nu ~ normal(theta1_nu, 0.7);
+    theta2_nu ~ normal(theta2_nu, 1.0);
+    theta3_nu ~ normal(theta3_nu, 0.5);
   }
 
   sub initial {
@@ -60,7 +60,7 @@ model SIR {
     ode(h = h, atoler = delta_abs, rtoler = delta_rel, alg = 'RK4(3)') {
       ds/dt = -exp(ln_beta)*s*i;
       di/dt = exp(ln_beta)*s*i - exp(ln_nu)*i;
-      dr/dt = exp(ln_nu*i);
+      dr/dt = exp(ln_nu)*i;
       dln_beta/dt = (theta1_beta - theta2_beta*ln_beta) + theta3_beta*w_beta/h;
       dln_nu/dt = (theta1_nu - theta2_nu*ln_nu) + theta3_nu*w_nu/h;
     }
