@@ -1,9 +1,8 @@
 name: SIR
 version: 1.0.0
-author: 
-email: 
-website-url:
-download-url:
-github-url:
-description:
-
+author: Lawrence Murray
+email: lawrence.murray@csiro.au
+website-url: http://www.github.com/lawmurray/SIR
+download-url: http://www.github.com/lawmurray/SIR/archive/master.tar.gz
+github-url: http://www.github.com/lawmurray/SIR
+description: Susceptible/infectious/recovered epidemiological compartmental model for Russian influenza data set.
