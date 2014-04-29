@@ -7,5 +7,5 @@ function prepare_init()
     catch
         % assume variable already exists...
     end
-    ncwrite(init_file, 'theta', [-6.42 1.06 -1.42; -2.62 3.33 3.10]);
+    ncwrite(init_file, 'theta', [-18.203 3.105 -0.150; -49.290 38.744 13.305]);
 end

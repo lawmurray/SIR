@@ -24,17 +24,18 @@ model SIR {
   }
 
   sub proposal_parameter {
-    const scale = 0.5;
+    const scale = 0.25;
 
     input C[f,n,n];  // adapted covariances for each flux
     param theta0[f,n](has_output = 0);
+    param C0[f,n,n](has_output = 0);
 
     theta0 <- theta;
+    C0 <- scale*C;
 
-    /* conditional distributions for multivariate normal proposal */
-    theta[f,0] ~ normal(theta0[f,0], scale*sqrt(C[f,0,0]));
-    theta[f,1] ~ normal(theta0[f,1] + (C[f,0,1]/C[f,0,0])*(theta[f,0] - theta0[f,0]), scale*sqrt(C[f,1,1] - C[f,0,1]**2/C[f,0,0]));
-    theta[f,2] ~ normal(theta0[f,2] + (C[f,0,2]/C[f,0,0])*(theta[f,0] - theta0[f,0]) + (C[f,1,2]/C[f,1,1])*(theta[f,1] - theta0[f,1]), scale*sqrt(C[f,2,2] - C[f,0,2]**2/C[f,1,1] - C[f,1,2]**2/C[f,2,2]));
+    theta[f,1] ~ normal(theta0[f,1], sqrt(C0[f,1,1]));
+    theta[f,0] ~ normal(theta0[f,0] + (C0[f,1,0]/C0[f,1,1])*(theta[f,1] - theta0[f,1]), sqrt(C0[f,0,0] - C0[f,1,0]**2/C0[f,1,1]));
+    theta[f,2] ~ normal(theta0[f,2] + (C0[f,1,2]/C0[f,1,1])*(theta[f,1] - theta0[f,1]), sqrt(C0[f,2,2] - C0[f,1,2]**2/C0[f,1,1]));
   }
 
   sub initial {
@@ -50,11 +51,11 @@ model SIR {
 
   sub transition(delta = h) {
     w[f] ~ normal(0.0, sqrt(h));
-    ode(h = h, atoler = delta_abs, rtoler = delta_rel, alg = 'RK4') {
+    ode(h = h, atoler = delta_abs, rtoler = delta_rel, alg = 'RK4(3)') {
       ds/dt = -exp(ln_beta[0])*s*i;
       di/dt = exp(ln_beta[0])*s*i - exp(ln_beta[1])*i;
       dr/dt = exp(ln_beta[1])*i;
-      dln_beta[f]/dt = (theta[f,0] - theta[f,1]*ln_beta[f]) + theta[f,2]*w[f]/h;
+      dln_beta[f]/dt = theta[f,0] - theta[f,1]*ln_beta[f] + theta[f,2]*w[f]/h;
     }
   }
 
