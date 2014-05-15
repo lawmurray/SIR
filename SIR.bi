@@ -17,7 +17,7 @@ model SIR {
   obs y_s, y_i, y_r;  // observations
   
   sub parameter {
-    theta[f,0] ~ uniform(-100, 100);
+    theta[f,0] ~ uniform(-100.0, 100.0);
     theta[f,1] ~ gamma(2.0, 1.0);
     theta[f,2] ~ uniform(0.0, 100.0);
   }
@@ -32,9 +32,9 @@ model SIR {
     theta0 <- theta;
     C0 <- scale*C;
 
-    theta[f,1] ~ normal(theta0[f,1], sqrt(C0[f,1,1]));
-    theta[f,0] ~ normal(theta0[f,0] + (C0[f,1,0]/C0[f,1,1])*(theta[f,1] - theta0[f,1]), sqrt(C0[f,0,0] - C0[f,1,0]**2/C0[f,1,1]));
-    theta[f,2] ~ normal(theta0[f,2] + (C0[f,1,2]/C0[f,1,1])*(theta[f,1] - theta0[f,1]), sqrt(C0[f,2,2] - C0[f,1,2]**2/C0[f,1,1]));
+    theta[f,1] ~ truncated_normal(theta0[f,1], sqrt(C0[f,1,1]), 0.0);
+    theta[f,0] ~ truncated_normal(theta0[f,0] + (C0[f,1,0]/C0[f,1,1])*(theta[f,1] - theta0[f,1]), sqrt(C0[f,0,0] - C0[f,1,0]**2/C0[f,1,1]), -100.0, 100.0);
+    theta[f,2] ~ truncated_normal(theta0[f,2] + (C0[f,1,2]/C0[f,1,1])*(theta[f,1] - theta0[f,1]), sqrt(C0[f,2,2] - C0[f,1,2]**2/C0[f,1,1]), 0.0, 100.0);
   }
 
   sub initial {
