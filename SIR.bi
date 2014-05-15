@@ -45,7 +45,7 @@ model SIR {
     r <- r0;
 
     /* initialise rates from stationary distribution */
-    ln_beta[f] ~ normal(theta[f,0]/theta[f,1], 0.5*theta[f,2]**2/theta[f,1]);
+    ln_beta[f] ~ normal(theta[f,0]/theta[f,1], sqrt(0.5*theta[f,2]**2/theta[f,1]));
   }
 
   sub transition(delta = h) {
