@@ -13,7 +13,7 @@ function prepare_input ()
   covfunc = @covSEiso;
   hyp.cov = log([5.0; 5.0]);
   likfunc = @likGauss;
-  hyp.lik = log(1.0e-2);
+  hyp.lik = log(2.0e-2);
 
   hyp = minimize(hyp, @gpwrap, -1000, @infExact, meanfunc, covfunc, likfunc, t, y);
 

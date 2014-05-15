@@ -5,6 +5,7 @@ model SIR {
   const h = 0.02; // time step
   const delta_abs = 1.0e-2; // absolute error tolerance
   const delta_rel = 1.0e-5; // relative error tolerance
+  const epsilon = 2.0e-2; // observation error tolerance
   
   dim f(2);  // no. fluxes
   dim n(3);  // no. params in each flux (OU) process
@@ -15,12 +16,10 @@ model SIR {
   state s, i, r;  // susceptible, infectious, recovered
   obs y_s, y_i, y_r;  // observations
   
-  inline epsilon_s = delta_abs + delta_rel*abs(s);
-  inline epsilon_i = delta_abs + delta_rel*abs(i);
-  inline epsilon_r = delta_abs + delta_rel*abs(r);
-
   sub parameter {
-    // uninformative
+    theta[f,0] ~ uniform(-100, 100);
+    theta[f,1] ~ gamma(2.0, 1.0);
+    theta[f,2] ~ uniform(0.0, 100.0);
   }
 
   sub proposal_parameter {
@@ -68,26 +67,26 @@ model SIR {
 
     inline s_k = s_sf2*exp(-0.5*(t_next_obs - t_now)**2/s_ell2);
     inline s_mu = log(s)*s_k/s_sf2;
-    inline s_sigma = sqrt(s_sf2 - s_k*s_k/s_sf2 + epsilon_s**2);
+    inline s_sigma = sqrt(s_sf2 - s_k*s_k/s_sf2 + epsilon**2);
 
     y_s ~ log_normal(s_mu, lambda*s_sigma);
 
     inline i_k = i_sf2*exp(-0.5*(t_next_obs - t_now)**2/i_ell2);
     inline i_mu = log(i)*i_k/i_sf2;
-    inline i_sigma = sqrt(i_sf2 - i_k*i_k/i_sf2 + epsilon_i**2);
+    inline i_sigma = sqrt(i_sf2 - i_k*i_k/i_sf2 + epsilon**2);
 
     y_i ~ log_normal(i_mu, lambda*i_sigma);
 
     inline r_k = r_sf2*exp(-0.5*(t_next_obs - t_now)**2/r_ell2);
     inline r_mu = log(r)*r_k/r_sf2;
-    inline r_sigma = sqrt(r_sf2 - r_k*r_k/r_sf2 + epsilon_r**2);
+    inline r_sigma = sqrt(r_sf2 - r_k*r_k/r_sf2 + epsilon**2);
 
     y_r ~ log_normal(r_mu, lambda*r_sigma);
   }
 
   sub observation {
-    y_s ~ uniform(s - epsilon_s, s + epsilon_s);
-    y_i ~ uniform(i - epsilon_i, i + epsilon_i);
-    y_r ~ uniform(r - epsilon_r, r + epsilon_r);
+    y_s ~ uniform(s - epsilon, s + epsilon);
+    y_i ~ uniform(i - epsilon, i + epsilon);
+    y_r ~ uniform(r - epsilon, r + epsilon);
   }
 }
