@@ -4,9 +4,15 @@ LibBi package: SIR
 Synopsis
 --------
 
+    ./init.sh
+
+This fits the bridge weight function. GNU Octave is required. Running it is
+optional, as the `data/input.nc` file is already set up.
+
     ./run.sh
     
-This samples from the posterior distribution using a bridge particle filter.
+This samples from the posterior distribution using a Russian influenza data
+set.
 
     octave --path oct/ --eval "plot_and_print"
 
@@ -20,9 +26,14 @@ This package includes a stochastic SIR (susceptible/infectious/recovered)
 epidemiological compartmental model of the form
 
 \begin{eqnarray}
+dS(t) &=& -\beta(t)S(t)I(t)\, dt\\
+dI(t) &=& \left(\beta(t)S(t)I(t)-\nu(t)I(t)\right)\, dt\\
+dR(t) &=& \nu(t)I(t)\, dt\\
+d\log\beta(t) &=& \left(\theta_{\beta,1}-\theta_{\beta,2}\log\beta(t)\right)\, dt+\theta_{\beta,3}\, dW_{\beta}(t)\\
+d\log\nu(t) &=& \left(\theta_{\nu,1}-\theta_{\nu,2}\log\nu(t)\right)\, dt+\theta_{\nu,3}\, dW_{\nu}(t).
 \end{eqnarray}
 
-It also includes ab observational data set of an epidemic of Russian influenza
+It also includes an observational data set of an epidemic of Russian influenza
 at a boys boarding school (Anonymous 1978). As this is a closed system the
 observations are considered exact, and the task is to simulate diffusion
 bridges between the observed values, and to estimate parameters.
