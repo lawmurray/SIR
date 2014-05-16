@@ -1,3 +1,3 @@
 #!/bin/sh
 
-./run_bridge.sh
+libbi sample @config.conf @posterior.conf

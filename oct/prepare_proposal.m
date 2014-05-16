@@ -1,7 +1,7 @@
 function prepare_proposal ()
     init_file = 'data/init.nc';
     input_file = 'data/input.nc';
-    output_file = 'results/posterior_bridge.nc';
+    output_file = 'results/posterior.nc';
 
     theta(1,:,:) = squeeze(ncread(output_file, 'theta')(:,1,:));
     theta(2,:,:) = squeeze(ncread(output_file, 'theta')(:,2,:));

@@ -6,8 +6,9 @@ Synopsis
 
     ./init.sh
 
-This fits the bridge weight function. GNU Octave is required. Running it is
-optional, as the `data/input.nc` file is already set up.
+This fits the bridge weight function. GNU Octave and GPML are
+required. Running it is optional, as the included files already have this set
+up.
 
     ./run.sh
     
