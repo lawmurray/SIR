@@ -50,4 +50,4 @@ Anonymous. Influenza in a boarding school. *British Medical Journal*, 1978, 1,
 587.
 
 Del Moral, P. & Murray, L. M. Sequential Monte Carlo with Highly Informative
-Observations, 2014.
+Observations, 2014. [\[arXiv\]](http://arxiv.org/abs/1405.4081)
